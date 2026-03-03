@@ -1,4 +1,5 @@
 -- Bootstrap packer.nvim
+--
 local ensure_packer = function()
   local fn = vim.fn
   local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
@@ -38,6 +39,7 @@ vim.keymap.set('n', '<leader>q', ':quit<CR>')
 vim.keymap.set('n', '<leader>O', ":Oil<CR>")
 vim.keymap.set('n', '<leader>M', ":Mason<CR>")
 vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format)
+vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
 
 -- LSP Attach Keymaps
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -57,7 +59,7 @@ require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   
   -- Colorscheme
-  use 'sainnhe/gruvbox-material'
+  use 'edeneast/nightfox.nvim'
   
   -- File Explorer
   use {
@@ -76,7 +78,8 @@ require('packer').startup(function(use)
       })
     end,
   }
-  
+  -- Undo tree
+  use "mbbill/undotree"
   -- Fuzzy Finder
   use {
     'nvim-telescope/telescope.nvim',
@@ -119,12 +122,30 @@ require('packer').startup(function(use)
   use 'neovim/nvim-lspconfig'
   use 'williamboman/mason.nvim'
   use 'williamboman/mason-lspconfig.nvim'
-  
+  use 'nvim-mini/mini.nvim'
+
+
   -- Completion
   use 'hrsh7th/nvim-cmp'
   use 'hrsh7th/cmp-nvim-lsp'
-  use 'L3MON4D3/LuaSnip'
+  use({
+    "L3MON4D3/LuaSnip",
+    tag = "v2.*",
+    run = "make install_jsregexp"
+  })
   use 'saadparwaiz1/cmp_luasnip'
+
+  --Notes
+  use({
+    'MeanderingProgrammer/render-markdown.nvim',
+    after = { 'nvim-treesitter' },
+    requires = { 'nvim-mini/mini.nvim', opt = true },            -- if you use the mini.nvim suite
+    -- requires = { 'nvim-mini/mini.icons', opt = true },        -- if you use standalone mini plugins
+    -- requires = { 'nvim-tree/nvim-web-devicons', opt = true }, -- if you prefer nvim-web-devicons
+    config = function()
+        require('render-markdown').setup({})
+    end,
+})
   
   -- Dashboard
   use {
@@ -291,11 +312,6 @@ end
 
 -- Colorscheme
 vim.cmd(":hi statusline guibg=NONE")
-vim.cmd("colorscheme gruvbox-material")
--- Transparent background
-vim.api.nvim_set_hl(0, 'Normal', { bg = 'none' })
-vim.api.nvim_set_hl(0, 'NormalFloat', { bg = 'none' })
--- Optional: fix background for other elements
-vim.api.nvim_set_hl(0, 'FloatBorder', { bg = 'none' })
-vim.api.nvim_set_hl(0, 'Pmenu', { bg = 'none' })
+vim.o.background = "dark"
+vim.cmd.colorscheme "carbonfox"
 
