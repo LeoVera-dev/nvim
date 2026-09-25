@@ -21,7 +21,7 @@ local map = vim.keymap.set
 
 -- General
 map("n", "<leader>o", ":update<CR>",           { desc = "Save" })
-map("n", "<leader>w", ":write<CR>",            { desc = "Write" })
+map("n", "<leader>C", "Config<CR>",            { desc = "Config"}) map("n", "<leader>w", ":write<CR>",            { desc = "Write" })
 map("n", "<leader>q", ":quit<CR>",             { desc = "Quit" })
 
 -- Plugins
@@ -36,7 +36,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     local function lmap(key, fn, desc)
       map("n", key, fn, vim.tbl_extend("force", opts, { desc = desc }))
     end
-
     lmap("gd",          vim.lsp.buf.definition,                      "Go to definition")
     lmap("K",           vim.lsp.buf.hover,                           "Hover docs")
     lmap("gr",          vim.lsp.buf.references,                      "References")
@@ -45,13 +44,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
     lmap("<leader>lf",  function()
       vim.lsp.buf.format({ async = false, timeout_ms = 2000 })
     end, "Format buffer")
-
     lmap("[d",          vim.diagnostic.goto_prev,                    "Prev diagnostic")
     lmap("]d",          vim.diagnostic.goto_next,                    "Next diagnostic")
     lmap("<leader>e",   vim.diagnostic.open_float,                   "Show diagnostic")
     lmap("<leader>dl",  vim.diagnostic.setloclist,                   "Diagnostic list")
   end,
 })
+
+vim.api.nvim_create_user_command('Config', "e ~/.config/nvim/init.lua", {bang = true, desc = "Open init.lua Neovim config"})
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -67,7 +67,6 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Plugins
 require("lazy").setup({
-
   -- Colorscheme
   {
     "edeneast/nightfox.nvim",
@@ -112,6 +111,9 @@ require("lazy").setup({
             },
           },
         },
+        pickers = {
+          find_files = { hidden = true },
+        },
       })
       map("n", "<leader>ff", builtin.find_files,           { desc = "Find files" })
       map("n", "<leader>fg", builtin.live_grep,            { desc = "Live grep" })
@@ -150,14 +152,12 @@ require("lazy").setup({
 
   -- LSP
   { "neovim/nvim-lspconfig" },
-
   {
     "williamboman/mason.nvim",
     config = function()
       require("mason").setup()
     end,
   },
-
   {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
@@ -168,7 +168,6 @@ require("lazy").setup({
       })
     end,
   },
-
   {
     "echasnovski/mini.icons",
     version = false,
@@ -293,16 +292,13 @@ require("lazy").setup({
       vim.cmd("autocmd FileType alpha setlocal nofoldenable")
     end,
   },
-
 }, {
   ui = { border = "rounded" },
 })
 
 -- LSP server configuration
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
 local servers = { "lua_ls", "pyright", "clangd", "rust_analyzer", "bashls", "ts_ls" }
-
 for _, server in ipairs(servers) do
   vim.lsp.config(server, { capabilities = capabilities })
 end
